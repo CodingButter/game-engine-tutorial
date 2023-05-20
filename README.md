@@ -1,4 +1,4 @@
-# New Project
+# New Game Engine Project
 
 > ✨ Bootstrapped with Create Snowpack App (CSA).
 
