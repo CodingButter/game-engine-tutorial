@@ -32,6 +32,6 @@ export default {
     },
     alias: {
         '@app': './src',
-        '@Engine': './src/Engine/',
+        '@titan': './src/titan/',
     },
 }
