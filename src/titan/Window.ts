@@ -26,7 +26,8 @@ export default class Window {
         this.aspectRatio = width / height;
         this.title = title;
         this.canvas = document.createElement("canvas");
-        this.gl = this.canvas.getContext("webgl2");
+        this.gl = this.canvas.getContext("webgl2") as WebGL2RenderingContext;
+        this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
         if (Window.resizable) this.resize(null)
         this.parent = parent;
     }
@@ -51,7 +52,7 @@ export default class Window {
     }
 
     private loop(): void {
-        let [r, g, b] = Window.rgbConvert(170, 166, 156);
+        let [r, g, b] = Window.rgbConvert(0, 0, 0);
         let beginTime = Time.getTime();
         let endTime = Time.getTime();
         let timer = 0;
@@ -67,6 +68,9 @@ export default class Window {
             }
             beginTime = endTime;
             gl.clearColor(r, g, b, 1);
+            gl.disable(gl.DEPTH_TEST);
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             gl.clear(gl.COLOR_BUFFER_BIT);
             if (this.currentScene) this.currentScene.update(dt);
             endTime = Time.getTime();

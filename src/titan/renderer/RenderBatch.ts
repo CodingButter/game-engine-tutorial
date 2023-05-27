@@ -3,14 +3,25 @@ import Shader from "./Shader";
 import Window from "@titan/Window"
 import Time from "@titan/util/Time";
 import AssetPool from "@titan/util/AssetPool";
+import Texture from "./Texture";
 
 export default class RenderBatch {
+    /**
+     * Pos      Color       TexCoor  TextureId
+     * f, f,    f,f,f,f     f,f      f
+     * 
+    */
+    private static MAX_TEXTURES: number = 8;
     private POS_SIZE: number = 2;
     private COLOR_SIZE: number = 4;
+    private TEX_COORDS_SIZE: number = 2;
+    private TEX_ID_SIZE: number = 1;
 
     private POS_OFFSET: number = 0;
     private COLOR_OFFSET: number = this.POS_OFFSET + this.POS_SIZE * Float32Array.BYTES_PER_ELEMENT;
-    private VERTEX_SIZE: number = this.POS_SIZE + this.COLOR_SIZE;
+    private TEX_COORDS_OFFSET: number = this.COLOR_OFFSET + this.COLOR_SIZE * Float32Array.BYTES_PER_ELEMENT;
+    private TEX_ID_OFFSET: number = this.TEX_COORDS_OFFSET + this.TEX_COORDS_SIZE * Float32Array.BYTES_PER_ELEMENT;
+    private VERTEX_SIZE: number = this.POS_SIZE + this.COLOR_SIZE + this.TEX_COORDS_SIZE + this.TEX_ID_SIZE
     private VERTEX_SIZE_BYTES: number = this.VERTEX_SIZE * Float32Array.BYTES_PER_ELEMENT;
 
 
@@ -18,6 +29,9 @@ export default class RenderBatch {
     private numSprites: number = 0;
     private _hasRoom: boolean = true;
     private vertices: Float32Array = new Float32Array(0);
+    private texSlots: Int32Array = new Int32Array([0, 1, 2, 3, 4, 5, 6, 7])
+
+    private textures: Texture[] = [];
 
     private vaoID: WebGLVertexArrayObject = 1 as WebGLVertexArrayObject;
     private vboID: WebGLBuffer = 1 as WebGLBuffer;
@@ -60,12 +74,26 @@ export default class RenderBatch {
         gl.vertexAttribPointer(1, this.COLOR_SIZE, gl.FLOAT, false, this.VERTEX_SIZE_BYTES, this.COLOR_OFFSET);
         gl.enableVertexAttribArray(1);
 
+        //Enable texCoords attrib pointers
+        gl.vertexAttribPointer(2, this.TEX_COORDS_SIZE, gl.FLOAT, false, this.VERTEX_SIZE_BYTES, this.TEX_COORDS_OFFSET);
+        gl.enableVertexAttribArray(2);
+
+        //Enable texId attrib pointers
+        gl.vertexAttribPointer(3, this.TEX_ID_SIZE, gl.FLOAT, false, this.VERTEX_SIZE_BYTES, this.TEX_ID_OFFSET);
+        gl.enableVertexAttribArray(3);
+
     }
 
     public addSprite(sprite: SpriteRenderer): void {
         const index: number = this.numSprites;
         this.sprites[index] = sprite;
         this.numSprites++;
+
+        //get texture
+        if (sprite.getTexture() != null) {
+            if (!this.textures.includes(sprite.getTexture() as Texture))
+                this.textures.push(sprite.getTexture() as Texture);
+        }
 
         //Add properties to local vertices array
         this.loadVertexProperties(index);
@@ -90,6 +118,14 @@ export default class RenderBatch {
         this.shader.uploadMat4("uView", cameraView);
         this.shader.uploadFloat("uTime", Time.getTime());
 
+        //bind textures
+        for (let i = 0; i < this.textures.length; i++) {
+            gl.activeTexture(gl.TEXTURE0 + i + 1);
+            this.textures[i].bind();
+        }
+
+        this.shader.uploadIntArray("uTextures", this.texSlots);
+
         //bind vaoID
         gl.bindVertexArray(this.vaoID);
         gl.enableVertexAttribArray(0);
@@ -99,6 +135,10 @@ export default class RenderBatch {
         gl.disableVertexAttribArray(0);
         gl.disableVertexAttribArray(1);
         gl.bindVertexArray(null);
+        //unbind textures
+        for (let i = 0; i < this.textures.length; i++) {
+            this.textures[i].unbind();
+        }
         this.shader.detach();
     }
 
@@ -108,6 +148,17 @@ export default class RenderBatch {
         // find offset within array (4 vertices per sprite)
         let floatOffset: number = offset * 4 * this.VERTEX_SIZE;
         const color = sprite.getColor();
+        const texCoords = sprite.getTexCoords();
+        let texId: number = 0;
+
+        if (sprite.getTexture() != null) {
+            for (let i = 0; i < this.textures.length; i++) {
+                if (this.textures[i] === sprite.getTexture()) {
+                    texId = i + 1;
+                    break
+                }
+            }
+        }
         // add vertices with the appropriate properties
         let xAdd: number = 1.0;
         let yAdd: number = 1.0;
@@ -129,6 +180,14 @@ export default class RenderBatch {
             this.vertices[floatOffset + 3] = color[1];
             this.vertices[floatOffset + 4] = color[2];
             this.vertices[floatOffset + 5] = color[3];
+
+            //load texCoords
+            this.vertices[floatOffset + 6] = texCoords[i][0];
+            this.vertices[floatOffset + 7] = texCoords[i][1];
+
+            //load texId
+            this.vertices[floatOffset + 8] = texId;
+
 
             floatOffset += this.VERTEX_SIZE;
         }
@@ -159,5 +218,13 @@ export default class RenderBatch {
 
     public hasRoom(): boolean {
         return this._hasRoom;
+    }
+
+    public hasTextureRoom(): boolean {
+        return this.textures.length < RenderBatch.MAX_TEXTURES;
+    }
+
+    public hasTexture(tex: Texture): boolean {
+        return this.textures.includes(tex);
     }
 }
