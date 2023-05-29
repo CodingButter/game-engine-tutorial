@@ -21,7 +21,8 @@ export default class AssetPool {
         if (AssetPool.textures.has(resourceName)) {
             return this.textures.get(resourceName)!;
         }
-        const texture = new Texture(resourceName);
+        const texture = new Texture();
+        texture.init(resourceName)
         AssetPool.textures.set(resourceName, texture);
         return texture;
     }

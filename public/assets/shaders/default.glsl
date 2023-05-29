@@ -9,23 +9,34 @@ layout (location=3) in float aTexIndex;
 uniform mat4 uProjection;
 uniform mat4 uView;
 uniform float uTime;
+uniform vec2 uResolution;
 
 out vec4 fColor;
 out vec2 fTexCoords;
 out float fTexIndex;
+out float fAspectRatio;
 
 void main(){
+    fAspectRatio = uResolution.x / uResolution.y;
     fColor = aColor;
     fTexCoords = aTexCoords;
     fTexIndex = aTexIndex;
-    vec4 position = uProjection * uView * vec4(aPos,0.0, 1.0);
+    //incorporate aspect ratio into projection matrix
+    mat4 projection = uProjection;
+    if(fAspectRatio > 1.0){
+        projection[0][0] = projection[0][0] * fAspectRatio;
+    }else{
+        projection[1][1] = projection[1][1] / fAspectRatio;
+    }
+    vec4 position = projection * uView * vec4(aPos, 0.0, 1.0);
+    
     gl_Position = position;
 }
 
 #type fragment
 #version 300 es
 #define numTextures 8
-precision highp float;
+precision mediump float;
 
 in vec4 fColor;
 in vec2 fTexCoords;

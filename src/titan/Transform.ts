@@ -8,4 +8,26 @@ export default class Transform {
         this.position = position;
         this.scale = scale;
     }
+
+    public copy(): Transform {
+        return new Transform(vec2.clone(this.position), vec2.clone(this.scale));
+    }
+
+    public copyTo(transform: Transform): void {
+        transform.position = vec2.clone(this.position);
+        transform.scale = vec2.clone(this.scale);
+    }
+
+    public setPosition(position: vec2): void {
+        this.position = position;
+    }
+
+    public setScale(scale: vec2): void {
+        this.scale = scale;
+    }
+
+
+    public equals(transform: Transform): boolean {
+        return vec2.equals(this.position, transform.position) && vec2.equals(this.scale, transform.scale);
+    }
 }

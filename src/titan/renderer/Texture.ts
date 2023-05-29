@@ -3,18 +3,17 @@ import EventEmitter from "events";
 
 export default class Texture extends EventEmitter {
     private filePath: string = "";
-    private textID: WebGLTexture;
+    private textID: WebGLTexture | undefined;
     private width: number | undefined;
     private height: number | undefined;
-    private gl: WebGL2RenderingContext = Window.getWebGLContext();
+    private _gl: WebGL2RenderingContext = Window.getWebGLContext();
 
-    constructor(filePath: string) {
-        super();
+    init(filePath: string) {
         this.filePath = filePath;
-        const gl = this.gl = Window.getWebGLContext();
+        const gl = this._gl = Window.getWebGLContext();
 
         // Generate texture on GPU
-        this.textID = this.gl.createTexture() as WebGLTexture;
+        this.textID = gl.createTexture() as WebGLTexture;
         gl.bindTexture(gl.TEXTURE_2D, this.textID);
 
         // Set Texture Parameters
@@ -35,7 +34,7 @@ export default class Texture extends EventEmitter {
     }
 
     private loadTexture(): void {
-        const gl = this.gl;
+        const gl = this._gl;
         const image = new Image();
         image.src = this.filePath;
         image.onload = (ev: Event) => {
@@ -49,7 +48,7 @@ export default class Texture extends EventEmitter {
             // check if image has alpha
 
             // Now that the image has loaded make copy it to the texture.
-            gl.bindTexture(gl.TEXTURE_2D, this.textID);
+            gl.bindTexture(gl.TEXTURE_2D, this.textID as WebGLTexture);
             if (this.isAlphaImage(image)) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
             else
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
@@ -58,11 +57,11 @@ export default class Texture extends EventEmitter {
     }
 
     public bind(): void {
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.textID);
+        this._gl.bindTexture(this._gl.TEXTURE_2D, this.textID as WebGLTexture);
     }
 
     public unbind(): void {
-        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+        this._gl.bindTexture(this._gl.TEXTURE_2D, null);
     }
 
     public getWidth(): number {

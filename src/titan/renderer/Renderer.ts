@@ -1,16 +1,14 @@
 import type GameObject from "@titan/GameObject";
 import RenderBatch from "./RenderBatch";
 import SpriteRenderer from "@titan/components/SpriteRenderer";
-import Shader from "./Shader";
 import Texture from "./Texture";
 
 export default class Renderer {
     private MAX_BATCH_SIZE = 1000;
-    private batches: Set<RenderBatch> = new Set<RenderBatch>();
+    private batches: RenderBatch[] = [];
 
     constructor() {
         console.log("Renderer created");
-        this.batches = new Set<RenderBatch>();
     }
 
     public add(gameObject: GameObject) {
@@ -22,7 +20,7 @@ export default class Renderer {
     private addSpriteRenderer(sprite: SpriteRenderer) {
         let added = false;
         for (let batch of this.batches) {
-            if (batch.hasRoom()) {
+            if (batch.hasRoom() && batch.getZIndex() == sprite?._gameObject?.getZIndex()) {
                 const tex: Texture | null = sprite.getTexture();
                 if (tex == null || (batch.hasTexture(tex) || batch.hasTextureRoom())) {
                     batch.addSprite(sprite);
@@ -32,16 +30,20 @@ export default class Renderer {
             }
         }
         if (!added) {
-            const newBatch = new RenderBatch(this.MAX_BATCH_SIZE);
+            const newBatch = new RenderBatch(this.MAX_BATCH_SIZE, sprite._gameObject?.getZIndex());
             newBatch.start();
-            this.batches.add(newBatch);
+            this.batches.push(newBatch);
             newBatch.addSprite(sprite);
+            this.batches.sort((a, b) => a.getZIndex() - b.getZIndex());
         }
     }
 
     public render(): void {
-        for (let batch of this.batches) {
-            batch.render();
-        }
+
+        this.batches.forEach((batch) => {
+            for (let batch of this.batches) {
+                batch.render();
+            }
+        })
     }
 }

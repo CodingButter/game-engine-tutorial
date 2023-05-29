@@ -37,12 +37,13 @@ export default class RenderBatch {
     private vboID: WebGLBuffer = 1 as WebGLBuffer;
     private matchBatchSize: number = 0;
     private shader: Shader;
+    private zIndex: number = -2;
 
-    constructor(matchBatchSize: number) {
-        console.log("RenderBatch created");
+    constructor(matchBatchSize: number, zIndex: number) {
         this.shader = AssetPool.getShader("/assets/shaders/default.glsl");
         this.sprites = new Array(matchBatchSize).fill(new SpriteRenderer());
         this.matchBatchSize = matchBatchSize;
+        this.zIndex = zIndex;
 
         // 4 vertices quads
         this.vertices = new Float32Array(matchBatchSize * 4 * this.VERTEX_SIZE);
@@ -104,19 +105,33 @@ export default class RenderBatch {
     }
 
     public render(): void {
+        const gl = Window.getWebGLContext();
+        let rebufferData: boolean = false;
+        for (let i = 0; i < this.numSprites; i++) {
+            const spr: SpriteRenderer = this.sprites[i];
+            if (spr.isDirty()) {
+                this.loadVertexProperties(i);
+                spr.setClean();
+                rebufferData = true;
+            }
+        }
+
+        if (rebufferData) {
+            // For now we will rebuffer all data every frame
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.vboID);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
+        }
+
         //use shader
         if (!this.shader.use()) return;
-        const gl = Window.getWebGLContext();
 
-        // For now we will rebuffer all data every frame
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vboID);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
 
         const cameraProjection = Window.getScene().getCamera().getProjectionMatrix();
         const cameraView = Window.getScene().getCamera().getViewMatrix();
         this.shader.uploadMat4("uProjection", cameraProjection)
         this.shader.uploadMat4("uView", cameraView);
         this.shader.uploadFloat("uTime", Time.getTime());
+        this.shader.uploadVec2("uResolution", Window.getResolution())
 
         //bind textures
         for (let i = 0; i < this.textures.length; i++) {
@@ -172,8 +187,8 @@ export default class RenderBatch {
             }
 
             //load position
-            this.vertices[floatOffset] = sprite.gameObject.transform.position[0] + (xAdd * sprite.gameObject.transform.scale[0]);
-            this.vertices[floatOffset + 1] = sprite.gameObject.transform.position[1] + (yAdd * sprite.gameObject.transform.scale[1]);
+            this.vertices[floatOffset] = sprite._gameObject.transform.position[0] + (xAdd * sprite._gameObject.transform.scale[0]);
+            this.vertices[floatOffset + 1] = sprite._gameObject.transform.position[1] + (yAdd * sprite._gameObject.transform.scale[1]);
 
             //load color
             this.vertices[floatOffset + 2] = color[0];
@@ -226,5 +241,9 @@ export default class RenderBatch {
 
     public hasTexture(tex: Texture): boolean {
         return this.textures.includes(tex);
+    }
+
+    public getZIndex(): number {
+        return this.zIndex;
     }
 }

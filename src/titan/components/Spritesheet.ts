@@ -7,11 +7,11 @@ export default class Spritesheet extends EventEmitter {
     private texture: Texture;
     private sprites: Set<Sprite> = new Set<Sprite>();
 
-    constructor(texture: Texture, numSprites: number = 1, spriteWidth: number = 16, spriteHeight?: number, spacing?: number) {
+    constructor(texture: Texture | null, numSprites: number = 1, spriteWidth: number = 16, spriteHeight?: number, spacing?: number) {
         super();
-        this.texture = texture;
+        this.texture = texture as Texture;
         this.texture.on("load", () => {
-            this.setSheet(texture, numSprites, spriteWidth, spriteHeight, spacing);
+            this.setSheet(this.texture, numSprites, spriteWidth, spriteHeight, spacing);
             this.emit("load");
         });
     }

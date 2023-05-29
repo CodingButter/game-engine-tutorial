@@ -1,3 +1,4 @@
+import { vec2 } from "gl-matrix";
 import LevelEditorScene from "./LevelEditorScene";
 import LevelScene from "./LevelScene";
 import type Scene from "./Scene";
@@ -14,6 +15,7 @@ export default class Window {
     private height: number;
     private title: string;
     private aspectRatio: number;
+    private lockAspectRatio: boolean = false;
 
     private canvas: HTMLCanvasElement;
     private gl: WebGL2RenderingContext | null;
@@ -43,12 +45,18 @@ export default class Window {
 
     private init(): void {
         this.setListeners();
-        if (this.gl === null) throw new Error("WebGL not supported");
+        const gl = this.gl as WebGL2RenderingContext;
+        if (gl === null) throw new Error("WebGL not supported");
         document.title = this.title;
         this.canvas.width = this.width
         this.canvas.height = this.height
         this.parent.appendChild(this.canvas)
         Window.changeScene(Window.LEVEL_EDITOR_SCENE);
+        this.lockAspectRatio = true;
+        if (Window.resizable) this.resize();
+        gl.disable(gl.DEPTH_TEST);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     }
 
     private loop(): void {
@@ -68,9 +76,7 @@ export default class Window {
             }
             beginTime = endTime;
             gl.clearColor(r, g, b, 1);
-            gl.disable(gl.DEPTH_TEST);
-            gl.enable(gl.BLEND);
-            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
             gl.clear(gl.COLOR_BUFFER_BIT);
             if (this.currentScene) this.currentScene.update(dt);
             endTime = Time.getTime();
@@ -80,11 +86,22 @@ export default class Window {
 
     }
 
-    private resize(event: UIEvent | null) {
+    private resize(event?: UIEvent | null) {
         if (!this.gl) return;
-        this.canvas.width = window.innerWidth
-        this.canvas.height = window.innerHeight
-        this.gl.viewport(0, 0, window.innerWidth, window.innerHeight)
+        if (this.lockAspectRatio) {
+            if (window.innerWidth / window.innerHeight > this.aspectRatio) {
+                this.canvas.width = window.innerHeight * this.aspectRatio;
+                this.canvas.height = window.innerHeight;
+            } else {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerWidth / this.aspectRatio;
+            }
+        } else {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+        }
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+
     }
 
     private setListeners(): void {
@@ -117,10 +134,27 @@ export default class Window {
         return Window.get().gl as WebGL2RenderingContext;
     }
 
+    public static getAspectRatio(): number {
+        return Window.get().aspectRatio;
+    }
+
+    public static getResolution(): vec2 {
+        const window = Window.get();
+        return vec2.fromValues(Window.get().width, Window.get().height);
+    }
+
+    public static getWidth(): number {
+        return Window.get().width;
+    }
+
+    public static getHeight(): number {
+        return Window.get().height;
+    }
+
     static get(): Window {
         if (Window.window === undefined) {
-            const width = Window.resizable ? window.innerWidth : 1920;
-            const height = Window.resizable ? window.innerHeight : 1080;
+            const width = 1920;
+            const height = 1080;
             Window.window = new Window(width, height, "Titan", document.body);
         }
         return Window.window;
