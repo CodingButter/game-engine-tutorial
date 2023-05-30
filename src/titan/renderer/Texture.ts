@@ -6,7 +6,7 @@ export default class Texture extends EventEmitter {
     private textID: WebGLTexture | undefined;
     private width: number | undefined;
     private height: number | undefined;
-    private _gl: WebGL2RenderingContext = Window.getWebGLContext();
+    private _gl: WebGL2RenderingContext;
 
     init(filePath: string) {
         this.filePath = filePath;

@@ -4,7 +4,6 @@ import LevelScene from "./LevelScene";
 import type Scene from "./Scene";
 import Time from "./util/Time";
 
-
 export default class Window {
     public static resizable: boolean = false;
     public static LEVEL_SCENE: number = 1;
@@ -28,9 +27,8 @@ export default class Window {
         this.aspectRatio = width / height;
         this.title = title;
         this.canvas = document.createElement("canvas");
-        this.gl = this.canvas.getContext("webgl2") as WebGL2RenderingContext;
-        this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
-        if (Window.resizable) this.resize(null)
+
+
         this.parent = parent;
     }
 
@@ -45,19 +43,27 @@ export default class Window {
 
     private init(): void {
         this.setListeners();
-        const gl = this.gl as WebGL2RenderingContext;
+        const gl = this.gl = this.canvas.getContext("webgl2") as WebGL2RenderingContext;
+        gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.viewport(0, 0, this.width, this.height);
         if (gl === null) throw new Error("WebGL not supported");
         document.title = this.title;
         this.canvas.width = this.width
         this.canvas.height = this.height
         this.parent.appendChild(this.canvas)
+        if (Window.resizable) this.resize(null)
         Window.changeScene(Window.LEVEL_EDITOR_SCENE);
+        this.currentScene?.load();
+        document.body.addEventListener("click", () => {
+            this.currentScene.save();
+        })
         this.lockAspectRatio = true;
         if (Window.resizable) this.resize();
         gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     }
+
 
     private loop(): void {
         let [r, g, b] = Window.rgbConvert(0, 0, 0);
@@ -67,16 +73,17 @@ export default class Window {
         let dt = 0;
         let gl = this.gl as WebGL2RenderingContext;
         let fpsDiv = document.getElementById("fps") as HTMLDivElement;
-        const update = () => {
+
+        const update = (time: number) => {
             dt = endTime - beginTime;
             timer += dt;
             if (timer > 1) {
-                fpsDiv.innerText = `FPS:${Math.floor((1 / dt))}`;
+                if (fpsDiv) fpsDiv.innerText = `FPS:${Math.floor((1 / dt))}`;
                 timer -= 1;
             }
             beginTime = endTime;
-            gl.clearColor(r, g, b, 1);
 
+            gl.clearColor(r, g, b, 1);
             gl.clear(gl.COLOR_BUFFER_BIT);
             if (this.currentScene) this.currentScene.update(dt);
             endTime = Time.getTime();
@@ -88,19 +95,22 @@ export default class Window {
 
     private resize(event?: UIEvent | null) {
         if (!this.gl) return;
+        const width = this.parent.offsetWidth
+        const height = this.parent.offsetHeight
+        console.log(width, height)
         if (this.lockAspectRatio) {
-            if (window.innerWidth / window.innerHeight > this.aspectRatio) {
-                this.canvas.width = window.innerHeight * this.aspectRatio;
-                this.canvas.height = window.innerHeight;
+            if (width / height > this.aspectRatio) {
+                this.canvas.style.width = `${(height * this.aspectRatio)}px`;
+                this.canvas.style.height = `${height}px`;
             } else {
-                this.canvas.width = window.innerWidth;
-                this.canvas.height = window.innerWidth / this.aspectRatio;
+                this.canvas.style.width = `${width}px`;
+                this.canvas.style.height = `${(width / this.aspectRatio)}px`;
             }
         } else {
-            this.canvas.width = window.innerWidth;
-            this.canvas.height = window.innerHeight;
+            this.canvas.style.width = `${width}px`;
+            this.canvas.style.height = `${height}px`;
         }
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+
 
     }
 
@@ -139,7 +149,6 @@ export default class Window {
     }
 
     public static getResolution(): vec2 {
-        const window = Window.get();
         return vec2.fromValues(Window.get().width, Window.get().height);
     }
 
@@ -151,11 +160,21 @@ export default class Window {
         return Window.get().height;
     }
 
-    static get(): Window {
+    static get(parent?: HTMLElement): Window {
         if (Window.window === undefined) {
             const width = 1920;
-            const height = 1080;
-            Window.window = new Window(width, height, "Titan", document.body);
+            const height = 900;
+            if (!parent) {
+                parent = document.createElement("div");
+                parent.id = "game";
+                parent.style.width = "100vw";
+                parent.style.height = "100vh";
+                parent.style.display = "flex";
+                parent.style.justifyContent = "center";
+                parent.style.alignItems = "center";
+                document.body.appendChild(parent);
+            }
+            Window.window = new Window(width, height, "Titan", parent as HTMLElement);
         }
         return Window.window;
     }

@@ -11,9 +11,8 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
+    "@zhobo63/imgui-ts": "^0.1.25",
     "events": "^3.3.0",
-    "gl-matrix": "^3.4.3",
-    "gson": "^0.1.5",
-    "util": "^0.12.5"
+    "gl-matrix": "^3.4.3"
   }
 }

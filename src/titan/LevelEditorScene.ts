@@ -9,69 +9,6 @@ import AssetPool from "./util/AssetPool";
 import Spritesheet from "./components/Spritesheet";
 import Sprite from "./components/Sprite";
 
-const gameObjectString = `{
-    "name": "Object 2",
-    "transform": {
-        "position": {
-            "0": 300,
-            "1": 200
-        },
-        "scale": {
-            "0": 100,
-            "1": 100
-        }
-    },
-    "components": [
-        {
-            "color": {
-                "0": 1,
-                "1": 1,
-                "2": 1,
-                "3": 1,
-                "type": "Float32Array"
-            },
-            "sprite": {
-                "texture": {
-                    "filePath": "/assets/images/spritesheet.png",
-                    "gl": {
-                        "type": "WebGL2RenderingContext"
-                    },
-                    "textID": {
-                        "type": "WebGLTexture"
-                    },
-                    "width": 224,
-                    "height": 32,
-                    "type": "Texture"
-                },
-                "texCoords": [
-                    {
-                        "0": 0.0714285746216774,
-                        "1": 1,
-                        "type": "Float32Array"
-                    },
-                    {
-                        "0": 0.0714285746216774,
-                        "1": 0.5,
-                        "type": "Float32Array"
-                    },
-                    {
-                        "0": 0,
-                        "1": 0.5,
-                        "type": "Float32Array"
-                    },
-                    {
-                        "0": 0,
-                        "1": 1,
-                        "type": "Float32Array"
-                    }
-                ],
-                "type": "Sprite"
-            },
-            "lastTransform": null,
-            "type": "SpriteRenderer"
-        }
-    ]
-}`
 
 export default class LevelEditorScene extends Scene {
 
@@ -81,6 +18,7 @@ export default class LevelEditorScene extends Scene {
   private obj1: GameObject | null = null;
   private obj2: GameObject | null = null;
   private sprites: Spritesheet | null = null;
+  private assetsLoaded: boolean = false;
 
   public init(): void {
     this.camera = new Camera(vec2.create())
@@ -88,15 +26,20 @@ export default class LevelEditorScene extends Scene {
     this.loadResources(() => {
       this.sprites = AssetPool.getSpritesheet("/assets/images/spritesheet.png") as Spritesheet
 
-      this.obj1 = new GameObject("Object 1", new Transform(vec2.fromValues(250, 200), vec2.fromValues(100, 100)), -1)
-      const spriteRenderer1 = new SpriteRenderer()
-      spriteRenderer1.setColor(vec4.fromValues(1, 0.5, 0, 1))
-      this.obj1.addComponent(spriteRenderer1)
-      this.addGameObjectToScene(this.obj1)
+      // this.obj1 = new GameObject("Object 1", new Transform(vec2.fromValues(250, 200), vec2.fromValues(100, 100)), -1)
+      // const spriteRenderer1 = new SpriteRenderer()
+      // spriteRenderer1.setColor(vec4.fromValues(1, 0.5, 0, 1))
+      // spriteRenderer1.setSprite(this.sprites?.getSprite(0) as Sprite)
+      // this.obj1.addComponent(spriteRenderer1)
+      // this.addGameObjectToScene(this.obj1)
 
-      const deserialized = GameObject.deserialize(gameObjectString);
-      console.log(deserialized);
-      this.addGameObjectToScene(deserialized)
+      // this.obj2 = new GameObject("Object 1", new Transform(vec2.fromValues(350, 200), vec2.fromValues(100, 100)), -1)
+      // const spriteRenderer2 = new SpriteRenderer()
+      // spriteRenderer2.setColor(vec4.fromValues(1, 0.5, 0, 1))
+      // spriteRenderer2.setSprite(this.sprites?.getSprite(0) as Sprite)
+      // this.obj2.addComponent(spriteRenderer2)
+      // this.addGameObjectToScene(this.obj2)
+      this.assetsLoaded = true;
     })
 
   }
@@ -111,7 +54,7 @@ export default class LevelEditorScene extends Scene {
 
 
   public update(dt: number): void {
-
+    if (!this.assetsLoaded) return;
 
     this.spriteFlipLeft -= dt;
     if (this.spriteFlipLeft <= 0) {
@@ -120,7 +63,9 @@ export default class LevelEditorScene extends Scene {
       if (this.spriteIndex > 4) {
         this.spriteIndex = 0;
       }
-      this.obj1?.getComponent(SpriteRenderer)?.setSprite(this.sprites?.getSprite(this.spriteIndex) as Sprite)
+      for (let gameObject of this.gameObjects) {
+        gameObject?.getComponent(SpriteRenderer)?.setSprite(this.sprites?.getSprite(this.spriteIndex) as Sprite)
+      }
     }
     for (let gameObject of this.gameObjects) {
       gameObject?.update(dt);

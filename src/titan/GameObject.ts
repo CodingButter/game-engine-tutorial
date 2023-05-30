@@ -61,16 +61,13 @@ export default class GameObject {
         for (let component of gameObject.components) {
             obj.components.push(component.serialize());
         }
-        return JSON.stringify(obj, null, 4);
+        return obj;
     }
 
-    public static deserialize(json: string): GameObject {
-        const obj = JSON.parse(json);
+    public static deserialize(obj: any): GameObject {
         const gameObject = new GameObject(obj.name, Object.assign(new Transform(), obj.transform));
         for (let component of obj.components) {
-            console.log(component.type)
             try {
-
                 const componentInstance = Components[component.type].deserialize(component);
                 gameObject.addComponent(componentInstance);
             } catch (e) {

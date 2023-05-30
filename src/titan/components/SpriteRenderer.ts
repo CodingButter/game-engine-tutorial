@@ -3,6 +3,7 @@ import Texture from "@titan/renderer/Texture";
 import Sprite from "@titan/components/Sprite";
 import { vec4, vec2 } from "gl-matrix"
 import Transform from "@titan/Transform";
+import AssetPool from "@titan/util/AssetPool";
 
 export default class SpriteRenderer extends Component {
     private color: vec4 = vec4.fromValues(1.0, 1.0, 1.0, 1.0);
@@ -58,14 +59,11 @@ export default class SpriteRenderer extends Component {
 
     public static deserialize(data: any): SpriteRenderer {
         const spriteRenderer = new SpriteRenderer();
-
         spriteRenderer.color = vec4.fromValues(data.color[0], data.color[1], data.color[2], data.color[3]);
         spriteRenderer.sprite = new Sprite();
         spriteRenderer.sprite.setTexCoords(data.sprite.texCoords);
-        const texture = new Texture(data.sprite.texture);
-        texture.init(data.sprite.texture.filePath);
+        const texture = AssetPool.getTexture(data.sprite.texture.filePath);
         spriteRenderer.sprite.setTexture(texture);
-
         return spriteRenderer;
     }
 }
