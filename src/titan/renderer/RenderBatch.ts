@@ -1,8 +1,8 @@
-import SpriteRenderer from "@titan/components/SpriteRenderer";
+import SpriteRenderer from "titan/components/SpriteRenderer";
 import Shader from "./Shader";
-import Window from "@titan/Window"
-import Time from "@titan/util/Time";
-import AssetPool from "@titan/util/AssetPool";
+import Window from "titan/Window"
+import Time from "titan/util/Time";
+import AssetPool from "titan/util/AssetPool";
 import Texture from "./Texture";
 
 export default class RenderBatch {
@@ -178,17 +178,17 @@ export default class RenderBatch {
         let xAdd: number = 1.0;
         let yAdd: number = 1.0;
         for (let i = 0; i < 4; i++) {
-            if (i == 1) {
+            if (i === 1) {
                 yAdd = 0.0;
-            } else if (i == 2) {
+            } else if (i === 2) {
                 xAdd = 0.0;
-            } else if (i == 3) {
+            } else if (i === 3) {
                 yAdd = 1.0;
             }
 
             //load position
-            this.vertices[floatOffset] = sprite._gameObject.transform.position[0] + (xAdd * sprite._gameObject.transform.scale[0]);
-            this.vertices[floatOffset + 1] = sprite._gameObject.transform.position[1] + (yAdd * sprite._gameObject.transform.scale[1]);
+            this.vertices[floatOffset] = sprite.__gameObject.transform.position[0] + (xAdd * sprite.__gameObject.transform.scale[0]);
+            this.vertices[floatOffset + 1] = sprite.__gameObject.transform.position[1] + (yAdd * sprite.__gameObject.transform.scale[1]);
 
             //load color
             this.vertices[floatOffset + 2] = color[0];

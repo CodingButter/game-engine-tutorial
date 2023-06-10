@@ -1,7 +1,7 @@
-import { mat4,vec3,vec2} from "gl-matrix";
+import { mat4, vec3, vec2 } from "gl-matrix";
 import Window from "./Window";
 
-export default class Camera{
+export default class Camera {
     private projectionMatrix: mat4;
     private viewMatrix: mat4;
     public position: vec2;
@@ -15,7 +15,7 @@ export default class Camera{
         this.adjustProjection();
     }
 
-    public adjustProjection() : void {
+    public adjustProjection(): void {
         // ortho(left, right, bottom, top, near, far)
         this.projectionMatrix = mat4.create();
         // set ortho view to the size of the canvas and depth of 100
@@ -23,11 +23,11 @@ export default class Camera{
     }
 
     public getViewMatrix(): mat4 {
-        const cameraFront = vec3.fromValues(0, 0, -1);
+
         const cameraUp = vec3.fromValues(0, 1, 0);
         this.viewMatrix = mat4.create();
         mat4.lookAt(this.viewMatrix, vec3.fromValues(this.position[0], this.position[1], 20), vec3.fromValues(this.position[0], this.position[1], 0), cameraUp);
-        
+
         return this.viewMatrix;
     }
 

@@ -1,4 +1,4 @@
-import Texture from "@titan/renderer/Texture";
+import Texture from "titan/renderer/Texture";
 import Sprite from "./Sprite";
 import { vec2 } from "gl-matrix";
 import EventEmitter from "events";

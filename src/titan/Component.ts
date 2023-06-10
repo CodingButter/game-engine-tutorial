@@ -1,23 +1,33 @@
 import GameObject from "./GameObject";
 import Transform from "./Transform";
-import { vec2, vec4 } from "gl-matrix";
+import { vec2 } from "gl-matrix";
 import { embedTypeRecursive } from "./util/Gson";
-import * as Components from "./components";
-export default abstract class Component {
-    public abstract update(dt: number): void;
-    public start(): void { }
-    public _gameObject: GameObject = new GameObject("blank", new Transform(vec2.create(), vec2.create()), 0);
+import Window from "./Window";
 
+export default abstract class Component {
+    public update(dt: number): void { }
+    public start(): void { }
+    public __gameObject: GameObject = new GameObject("blank", new Transform(vec2.create(), vec2.create()), 0);
     public serialize(): any {
         const objCopy = embedTypeRecursive(this);
         return objCopy
     }
 
-    public imgui(): void {
-        try {
-            console.log("something");
-        } catch (e) {
-            console.assert(false, e)
+    public getEditableFields(): any[] {
+        const fields = [];
+        for (const key in this) {
+            // @ts-ignore
+            if (typeof this[key] !== "function" && key[0] !== "_") {
+                fields.push({ name: key, value: this[key] });
+            }
         }
+        fields.sort((a, b) => a.name.localeCompare(b.name))
+        return fields;
+    }
+
+    public setEditableField(key: string, value: any) {
+        // @ts-ignore
+        this[key] = value;
+        Window.getScene()?.save();
     }
 }

@@ -1,4 +1,4 @@
-import Window from "@titan/Window";
+import Window from "titan/Window";
 import type { mat4, vec2, vec3, vec4 } from "gl-matrix";
 
 type ShaderSources = {
@@ -22,7 +22,7 @@ export default class Shader {
 
     public async loadCompileLink(): Promise<void> {
         const response = await fetch(this.filePath, { cache: "force-cache", mode: 'same-origin' })
-        const shaderString = await response.text()
+        const shaderString = await response.text();
         this.vertexShaderSource = Shader.getShader(shaderString, "vertex");
         this.fragmentShaderSource = Shader.getShader(shaderString, "fragment");
         Shader.shaderSources.set(this.filePath, {

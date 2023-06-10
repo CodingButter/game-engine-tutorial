@@ -1,5 +1,4 @@
-import Component from "@titan/Component";
-import Texture from "@titan/renderer/Texture";
+import Texture from "titan/renderer/Texture";
 import { vec2 } from "gl-matrix";
 
 export default class Sprite {
@@ -10,6 +9,7 @@ export default class Sprite {
         vec2.fromValues(0.0, 0.0),
         vec2.fromValues(0.0, 1.0)
     ];
+
     constructor(texture?: Texture, texCoords?: vec2[]) {
         this.texture = texture;
         this.texCoords = texCoords || this.texCoords;

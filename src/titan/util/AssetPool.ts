@@ -1,6 +1,6 @@
-import Spritesheet from "@titan/components/Spritesheet";
-import Shader from "@titan/renderer/Shader";
-import Texture from "@titan/renderer/Texture";
+import Spritesheet from "titan/components/Spritesheet";
+import Shader from "titan/renderer/Shader";
+import Texture from "titan/renderer/Texture";
 
 export default class AssetPool {
     private static shaders: Map<string, Shader> = new Map<string, Shader>();

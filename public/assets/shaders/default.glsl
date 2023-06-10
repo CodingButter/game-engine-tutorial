@@ -23,7 +23,11 @@ void main(){
     fTexIndex = aTexIndex;
     //incorporate aspect ratio into projection matrix
     mat4 projection = uProjection;
- 
+    if(fAspectRatio > 1.0){
+        projection[0][0] = projection[0][0] * fAspectRatio;
+    }else{
+        projection[1][1] = projection[1][1] / fAspectRatio;
+    }
     vec4 position = projection * uView * vec4(aPos, 0.0, 1.0);
     
     gl_Position = position;
@@ -31,8 +35,8 @@ void main(){
 
 #type fragment
 #version 300 es
-#define numTextures 16
-precision highp float;
+#define numTextures 8
+precision mediump float;
 
 in vec4 fColor;
 in vec2 fTexCoords;
@@ -43,39 +47,25 @@ uniform sampler2D uTextures[numTextures];
 out vec4 color;
 
 vec4 getTexColor(int index, vec2 coords){
+    vec4 c = vec4(0.0);
     if(index == 0){
-        return texture(uTextures[0], coords);
+        c += texture(uTextures[0], coords);
     }else if(index == 1){
-        return texture(uTextures[1], coords);
+        c += texture(uTextures[1], coords);
     }else if(index == 2){
-        return texture(uTextures[2], coords);
+        c += texture(uTextures[2], coords);
     }else if(index == 3){
-        return texture(uTextures[3], coords);
+        c += texture(uTextures[3], coords);
     }else if(index == 4){
-        return texture(uTextures[4], coords);
+        c += texture(uTextures[4], coords);
     }else if(index == 5){
-        return texture(uTextures[5], coords);
+        c += texture(uTextures[5], coords);
     }else if(index == 6){
-        return texture(uTextures[6], coords);
+        c += texture(uTextures[6], coords);
     }else if(index == 7){
-        return texture(uTextures[7], coords);
-    }else if(index == 8){
-        return texture(uTextures[8], coords);
-    }else if(index == 9){
-        return texture(uTextures[9], coords);
-    }else if(index == 10){
-        return texture(uTextures[10], coords);
-    }else if(index == 11){
-        return texture(uTextures[11], coords);
-    }else if(index == 12){
-        return texture(uTextures[12], coords);
-    }else if(index == 13){
-        return texture(uTextures[13], coords);
-    }else if(index == 14){
-        return texture(uTextures[14], coords);
-    }else if(index == 15){
-        return texture(uTextures[15], coords);
+        c += texture(uTextures[7], coords);
     }
+    return c;
 }
 
 void main(){

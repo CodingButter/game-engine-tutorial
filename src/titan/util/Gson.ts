@@ -1,9 +1,3 @@
-
-export function fromJson<T>(json: string, className: T) {
-    const obj = JSON.parse(json);
-    return Object.assign(new className(), obj);
-}
-
 export const embedTypeRecursive = (obj: any): any => {
     const type = obj.constructor.name;
     obj = { ...obj };
@@ -15,7 +9,7 @@ export const embedTypeRecursive = (obj: any): any => {
         return obj;
     } else if (obj instanceof Object) {
         Object.keys(obj).forEach((key) => {
-            if (key.includes("_")) {
+            if (key.includes("__")) {
                 delete obj[key];
             } else {
                 if (obj[key] instanceof Object) {

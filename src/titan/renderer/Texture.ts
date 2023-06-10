@@ -1,4 +1,4 @@
-import Window from "@titan/Window"
+import Window from "titan/Window"
 import EventEmitter from "events";
 
 export default class Texture extends EventEmitter {
@@ -6,7 +6,7 @@ export default class Texture extends EventEmitter {
     private textID: WebGLTexture | undefined;
     private width: number | undefined;
     private height: number | undefined;
-    private _gl: WebGL2RenderingContext;
+    private _gl: WebGL2RenderingContext | undefined;
 
     init(filePath: string) {
         this.filePath = filePath;
@@ -34,7 +34,7 @@ export default class Texture extends EventEmitter {
     }
 
     private loadTexture(): void {
-        const gl = this._gl;
+        const gl = this._gl as WebGL2RenderingContext;
         const image = new Image();
         image.src = this.filePath;
         image.onload = (ev: Event) => {
@@ -57,11 +57,13 @@ export default class Texture extends EventEmitter {
     }
 
     public bind(): void {
-        this._gl.bindTexture(this._gl.TEXTURE_2D, this.textID as WebGLTexture);
+        const gl = this._gl as WebGL2RenderingContext;
+        gl.bindTexture(gl.TEXTURE_2D, this.textID as WebGLTexture);
     }
 
     public unbind(): void {
-        this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+        const gl = this._gl as WebGL2RenderingContext;
+        gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
     public getWidth(): number {

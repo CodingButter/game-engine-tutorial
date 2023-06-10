@@ -1,6 +1,6 @@
-import type GameObject from "@titan/GameObject";
+import type GameObject from "titan/GameObject";
 import RenderBatch from "./RenderBatch";
-import SpriteRenderer from "@titan/components/SpriteRenderer";
+import SpriteRenderer from "titan/components/SpriteRenderer";
 import Texture from "./Texture";
 
 export default class Renderer {
@@ -20,9 +20,9 @@ export default class Renderer {
     private addSpriteRenderer(sprite: SpriteRenderer) {
         let added = false;
         for (let batch of this.batches) {
-            if (batch.hasRoom() && batch.getZIndex() == sprite?._gameObject?.getZIndex()) {
+            if (batch.hasRoom() && batch.getZIndex() === sprite?._gameObject?.getZIndex()) {
                 const tex: Texture | null = sprite.getTexture();
-                if (tex == null || (batch.hasTexture(tex) || batch.hasTextureRoom())) {
+                if (tex === null || (batch.hasTexture(tex) || batch.hasTextureRoom())) {
                     batch.addSprite(sprite);
                     added = true;
                     break;

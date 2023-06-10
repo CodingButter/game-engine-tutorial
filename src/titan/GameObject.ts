@@ -1,3 +1,4 @@
+import { vec2 } from "gl-matrix";
 import type Component from "./Component";
 import Transform from "./Transform";
 import * as Components from "./components";
@@ -34,7 +35,7 @@ export default class GameObject {
 
     public addComponent<T extends Component>(component: T): void {
         this.components.push(component);
-        component._gameObject = this;
+        component.__gameObject = this;
     }
 
     public update(dt: number): void {
@@ -53,6 +54,14 @@ export default class GameObject {
         return this.zIndex;
     }
 
+    public getName(): string {
+        return this.name;
+    }
+
+    public getComponents(): Component[] {
+        return this.components;
+    }
+
     public static serialize(gameObject: GameObject): string {
         const obj: any = {};
         obj.name = gameObject.name;
@@ -65,10 +74,15 @@ export default class GameObject {
     }
 
     public static deserialize(obj: any): GameObject {
-        const gameObject = new GameObject(obj.name, Object.assign(new Transform(), obj.transform));
+        const position = vec2.fromValues(obj.transform.position[0], obj.transform.position[1]);
+        const scale = vec2.fromValues(obj.transform.scale[0], obj.transform.scale[1]);
+        const transform = new Transform(position, scale);
+        const gameObject = new GameObject(obj.name, transform);
         for (let component of obj.components) {
             try {
-                const componentInstance = Components[component.type].deserialize(component);
+                // @ts-ignore
+                const componentClass = Components[component.type] as any;
+                const componentInstance = componentClass.deserialize(component);
                 gameObject.addComponent(componentInstance);
             } catch (e) {
                 console.log(e)
