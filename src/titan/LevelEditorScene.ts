@@ -2,14 +2,14 @@ import { vec2 } from "gl-matrix";
 import Scene from "./Scene";
 import Camera from "./Camera";
 import GameObject from "./GameObject";
-import SpriteRenderer from "./components/SpriteRenderer";
 import Renderer from "./renderer/Renderer";
 import AssetPool from "./util/AssetPool";
 import Spritesheet from "./components/Spritesheet";
-import Sprite from "./components/Sprite";
-import RigidBody from "./components/RigidBody";
-import Transform from "./Transform";
-import { vec4 } from "gl-matrix";
+// import SpriteRenderer from "./components/SpriteRenderer";
+// import Sprite from "./components/Sprite";
+// import RigidBody from "./components/RigidBody";
+// import Transform from "./Transform";
+// import { vec4 } from "gl-matrix";
 
 
 

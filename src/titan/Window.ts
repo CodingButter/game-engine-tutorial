@@ -13,7 +13,6 @@ export default class Window extends EventEmitter {
     private height: number;
     private title: string;
     private aspectRatio: number;
-    private lockAspectRatio: boolean = false;
 
     private canvas: HTMLCanvasElement;
     private gl: WebGL2RenderingContext | null;
@@ -28,13 +27,9 @@ export default class Window extends EventEmitter {
         this.aspectRatio = width / height;
         this.title = title;
         this.canvas = document.createElement("canvas");
-        this.canvas.style.maxWidth = "100%";
-        this.canvas.style.maxHeight = "100%";
-        this.canvas.style.aspectRatio = `${this.aspectRatio}`;
         this.gl = this.canvas.getContext("webgl2") as WebGL2RenderingContext;
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
         this.gl.viewport(0, 0, this.width, this.height);
-        if (Window.resizable) this.resize(null)
         this.parent = parent;
     }
 
@@ -53,9 +48,7 @@ export default class Window extends EventEmitter {
         }
         window.parent = parent;
         window.parent.innerHTML = "";
-        window.parent.style.backgroundColor = `rgba(${Window.rgbConvert(window.rgb[0], window.rgb[1], window.rgb[2]).join(",")},1)`;
         window.parent.appendChild(window.canvas);
-
     }
 
     private static rgbConvert(r: number, g: number, b: number): number[] {
@@ -63,19 +56,17 @@ export default class Window extends EventEmitter {
     }
 
     private init(): void {
-        this.setListeners();
-
         const gl = this.gl as WebGL2RenderingContext;
         if (gl === null) throw new Error("WebGL not supported");
         document.title = this.title;
         this.canvas.width = this.width
         this.canvas.height = this.height
-        this.parent.appendChild(this.canvas)
+        this.canvas.style.width = "100%";
+        this.canvas.style.height = "100%";
+        this.canvas.style.objectFit = "cover";
         const levelEditorScene = new LevelEditorScene();
         Window.changeScene(levelEditorScene);
         this.currentScene?.load();
-        this.lockAspectRatio = true;
-        if (Window.resizable) this.resize();
         gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -107,21 +98,6 @@ export default class Window extends EventEmitter {
         }
         requestAnimationFrame(update)
 
-    }
-
-    private resize(event?: UIEvent | null) {
-        // if (!this.gl) return;
-        // const width = this.parent.offsetWidth
-        // const height = this.parent.offsetHeight
-        // this.canvas.style.maxWidth = width + "px";
-        // this.canvas.style.maxHeight = height + "px";
-        // this.canvas.style.width = "100%";
-        // this.canvas.style.aspectRatio = `${this.aspectRatio}`;
-    }
-
-    private setListeners(): void {
-        if (Window.resizable)
-            window.addEventListener("resize", this.resize.bind(this));
     }
 
     public static getScene(): Scene {

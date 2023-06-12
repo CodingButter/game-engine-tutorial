@@ -1,59 +1,86 @@
-import React, { useRef, useState, useEffect } from 'react';
-import './App.css';
-import ObjectMenu from "components/ObjectMenu"
-import Window from "titan/Window"
-import AssetManagerMenu from 'components/AssetManagerMenu';
+// import ObjectMenu from "components/ObjectMenu"
+//import AssetManagerMenu from 'components/AssetManagerMenu';
+import { TitanProvider } from 'hooks/useTitan';
+import { useEffect,useRef } from 'react';
+import Splitter from 'components/Splitter';
+import { useResizable } from 'react-resizable-layout';
+import useLocalStorage from 'hooks/useLocalStorage';
+import classNames from 'classnames';
+import Toolbar from 'components/Toolbar';
+import Hierarchy from 'components/Hierarchy';
 
 function App() {
   const canvasWrapper = useRef(null)
-  const [gameLoaded, setGameLoaded] = useState(false)
+  const [hierarchyExpanded, setHierarchyExpanded] = useLocalStorage("hierarchyExpandedState", true);
+  const [hierarchyPosition, setHierarchyPosition] = useLocalStorage("hierarchyPosition", 250)
+  const [inspectorPosition, setInspectorPosition] = useLocalStorage("inspectorPosition", 250)
+  const [assetManagerPosition, setAssetManagerPosition] = useLocalStorage("assetManagerPosition", 250)
 
-  const setGameWindowLoaded = () => {
-    setGameLoaded(true)
-  }
+  const { isDragging: isHierarchyDragging, endPosition:hierarchyEndPosition, position: hierarchyDragPosition, separatorProps: hierarchyDragBarProps } = useResizable({
+    axis: 'x',
+    min: 245,
+    max: 600,
+    initial: hierarchyPosition
+  })
 
-  const saveGame = () => {
-    Window.getScene().save()
-  }
+  const { isDragging: isInspectorDragging, endPosition:inpectorEndPosition, position: inspectorDragPosition, separatorProps: inspectorDragBarProps } = useResizable({
+    axis: 'x',
+    max: 600,
+    reverse: true,
+    initial: inspectorPosition
+  })
 
-  const exportGame = () => {
-    Window.getScene().export()
-  }
-
-  const importGame = () => {
-    Window.getScene().import()
-  }
+  const { isDragging: isAssetManagerDragging, endPosition:assetManagerEndPosition, position: assetManagerDragPosition, separatorProps: assetManagerDragBarProps } = useResizable({
+    axis: 'y',
+    min: 150,
+    max: 600,
+    initial: assetManagerPosition,
+    reverse: true
+  })
+  
+  useEffect(() => {
+    setHierarchyPosition(hierarchyExpanded?hierarchyDragPosition|0:74)
+  }, [hierarchyEndPosition, setHierarchyPosition, hierarchyExpanded, hierarchyDragPosition])
 
   useEffect(() => {
-    if(!canvasWrapper.current) return
-    let window = Window.get()
-    Window.resizable = true;
-    window.addListener("loaded", setGameWindowLoaded)
-    Window.attachCanvas(canvasWrapper.current as HTMLDivElement)
-    if(!gameLoaded) window.run()
+    setInspectorPosition(inpectorEndPosition|0)
+  }, [inpectorEndPosition, setInspectorPosition])
 
-    return () => {
-      window.removeListener("loaded", setGameWindowLoaded);
-    }
-
-  }, [canvasWrapper,gameLoaded])
-    return (
-      <div className="flex w-screen h-screen flex-col bg-background text-white">
-        <div className="flex absolute top-2 right-2 px-2 gap-2 rounded-full bg-white text-black">
-          <button onClick={saveGame}>Save</button>
-          <button onClick={exportGame}>Export</button>
-          <button onClick={importGame}>Import</button>
+  useEffect(() => {
+    setAssetManagerPosition(assetManagerEndPosition|0)
+  }, [assetManagerEndPosition, setAssetManagerPosition])
+  
+  return (
+    <TitanProvider canvasWrapper={canvasWrapper}>
+        
+      <div className={"flex h-screen w-screen flex-col text-neutral-100 overflow-hidden relative z-10"}>
+        <div className={"flex grow"}>
+          <div className={classNames(hierarchyExpanded?"bg-neutral-600":"bg-neutral-700"," shrink-0 flex items-start justify-start h-full overflow-hidden", isHierarchyDragging ? "dragging" : "")} style={{ width: hierarchyExpanded?hierarchyDragPosition|0:74 }}>
+            <div className='flex justify-start items-start'>
+              <Toolbar />
+            </div>
+            <div className="flex justify-start items-start w-full">
+              <Hierarchy expanded={hierarchyExpanded} setExpanded={setHierarchyExpanded} />
+            </div>
+          </div>
+          <Splitter id="HierarchySplitter" dir="vertical" isDragging={isHierarchyDragging} {...hierarchyDragBarProps} />
+          <div className={"flex flex-col grow justify-center items-center"}>
+            <div className={"grow shrink-0"}>
+              <div ref={canvasWrapper} className="w-full h-full flex justify-center items-center"></div>
+            </div>
+            <Splitter id="AssetManagerSplitter" dir="horizontal" isDragging={isAssetManagerDragging} {...assetManagerDragBarProps} />
+            <div className={classNames("bg-neutral-400 shrink-0 grid place-items-center w-full", isAssetManagerDragging ? "dragging" : "")} style={{ height: assetManagerDragPosition|0 }}>
+              Asset Manager
+            </div>
+          </div>
+          <Splitter id="InpsectorSplitter" dir="vertical" isDragging={isInspectorDragging} {...inspectorDragBarProps} />
+          <div className={classNames("bg-neutral-400 shrink-0 grid place-items-center z-20 relative", isInspectorDragging ? "dragging" : "")} style={{ width: inspectorDragPosition|0 }}>
+            Inspector
+          </div>
         </div>
-      <div className="absolute top-4 left-4 px-2 rounded-full bg-white text-black" id='fps'></div>
-      <div className="flex flex-row justify-start items-start h-3/4 max-h-[700px]">
-        <div ref={canvasWrapper} className="flex flex-col justify-start items-center w-3/4 h-full overflow-hidden rounded-br-md">
-        </div>
-          <div className="flex flex-col justify-start items-start w-1/4 min-w-[250px] p-base max-h-full overflow-y-auto">
-          <ObjectMenu />
-        </div>
+        <div className="bg-neutral-650 flex justify-start items-start p-2 py-0 text-[12px] font-thin text-neutral-300">modify selection</div>
       </div>
-      <AssetManagerMenu />
-    </div>
+    </TitanProvider>
   );
 }
 
