@@ -24,7 +24,7 @@ const Hierarchy = ({expanded,setExpanded}:HierarchyProps) => {
     "flex flex-col w-full h-full grow",
         !expanded && "bg-neutral-700"                
         )}>
-            <div className={classNames("origin-bottom-left flex justify-between items-center bg-neutral-700 h-8 w-full",
+            <div className={classNames("origin-bottom-left flex justify-between items-center bg-neutral-700 h-8 w-full select-none",
                 "transition-all duration-100",
                 !expanded && "rotate-90 -translate-y-8"
             )}>
@@ -35,7 +35,7 @@ const Hierarchy = ({expanded,setExpanded}:HierarchyProps) => {
                             onClick={toggleExpanded}>
                             <ArrowDropDownIcon />
                         </button>
-                        <span className="text-neutral-100 capitalize font-bold text-xs tracking-wider">HIERARCHY</span>
+                        <span className="text-neutral-100 capitalize font-bold text-xs tracking-wider cursor-pointer" onClick={toggleExpanded}>HIERARCHY</span>
                     </div>
                     <div className={classNames("flex justify-center items-center gap-1", !expanded && "hidden")}>
                         <button className="flex items-center justify-center rounded-sm shadow bg-neutral-600 text-[12px]">
@@ -84,8 +84,8 @@ const ExpandableMenu = ({ children, title, className, ...props }: any) => {
     const [expanded, setExpanded] = useState(false); 
 
     return (
-        <div className={classNames("flex flex-col w-full justify-start items-start", className)} {...props}>
-            <button className="text-neutral-100 w-full capitalize font-bold text-xs tracking-wider hover:bg-neutral-650 text-left px-2 py-1" onClick={() => setExpanded(!expanded)}>{title}:</button>
+        <div className={classNames("flex flex-col w-full justify-start items-start font-thin text-sm", className)} {...props}>
+            <button className="text-neutral-100 w-full capitalize text-[13px] tracking-wider hover:bg-neutral-650 text-left p-px px-1" onClick={() => setExpanded(!expanded)}>{title}:</button>
             <ul className={classNames(!expanded && "hidden","flex flex-col w-full justify-start items-start")}>
                 {children}
             </ul>
