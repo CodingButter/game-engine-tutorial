@@ -4,9 +4,6 @@
         "lib": [
             "dom", "dom.iterable", "esnext"
         ],
-        "ts-node": {
-            "require": ["tsconfig-paths/register"]
-        },
         "allowJs": true,
         "skipLibCheck": true,
         "esModuleInterop": true,
@@ -23,7 +20,15 @@
         "jsx": "react-jsx",
         "baseUrl": "src",
         "paths": {
-            "@/*": ["./src/*"]
+            "@editor/components/*": [
+                "components/editor/singletons/*", "components/editor/multis/*"
+            ],
+            "@engine/components/*": [
+                "components/engine/singletons/*", "components/engine/multis/*"
+            ],
+            "@hooks/*": ["hooks/*"],
+            "@utils/*": ["utils/*"]
+
         }
     },
     "include": ["src"]

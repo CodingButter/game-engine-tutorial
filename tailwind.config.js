@@ -31,12 +31,12 @@ function generateNeutrals(hue){
   ]
   sb.map(sb2sl).forEach(([sat, bright], index) => {
       const key = 1000 - (index * 50 + 50)
-      shades[key] = `hsla(${hue},${sat}%,${bright}%,1)`
+      shades[`neutral-${key}`] = `hsla(${hue},${sat}%,${bright}%,1)`
     })
   return shades
 }
 
-function generateShades(hue) {
+function generateShades(name,hue) {
   const shades = {}
   const sb = [
     [100, 24],
@@ -52,95 +52,20 @@ function generateShades(hue) {
     sb.map(sb2sl)
     .forEach(([sat, bright], index) => {
       const key = 1000 - (index * 100 + 100)
-      shades[key] = `hsla(${hue},${sat}%,${bright}%,1)`
+      shades[`${name}-${key}`] = `hsla(${hue},${sat}%,${bright}%,1)`
     })
+  const defaultSahade = sb2sl(sb[4])
+  shades[name] = `hsla(${hue},${defaultSahade[0]}%,${defaultSahade[1]}%,1))`
   return shades
 }
 
-// const Colors = {
-//   neutral: {
-//     150: "hsla(146,0%,100%,1)", 
-//     200: "hsla(146,4%,90%,1)", 
-//     250: "hsla(146,4%,80%,1)", 
-//     300: "hsla(146,4%,69%,1)", 
-//     350: "hsla(146,4%,59%,1)", 
-//     400: "hsla(146,3%,48%,1)", 
-//     450: "hsla(146,3%,37%,1)", 
-//     500: "hsla(146,4%,25%,1)", 
-//     550: "hsla(146,6%,22%,1)", 
-//     600: "hsla(146,8%,17%,1)", 
-//     650: "hsla(146,9%,13%,1)", 
-//     700: "hsla(146,13%,11%,1)", 
-//     750: "hsla(146,17%,9%,1)", 
-//     800: "hsla(146,22%,7%,1)", 
-//     850: "hsla(146,27%,6%,1)", 
-//     900: "hsla(146,32%,5%,1)", 
-//     950: "hsla(146,38%,4%,1)"
-//   },
-//   brand: {
-//     100: "hsla(97,100%,96%,1)", 
-//     200: "hsla(97,87%,78%,1)", 
-//     300: "hsla(97,91%,66%,1)", 
-//     400: "hsla(97,86%,57%,1)", 
-//     500: "hsla(97,82%,50%,1)", 
-//     600: "hsla(97,87%,39%,1)", 
-//     700: "hsla(97,90%,30%,1)", 
-//     800: "hsla(97,94%,21%,1)", 
-//     900: "hsla(97,100%,12%,1)"
-//   },
-//   success: {
-//     100: "hsla(70,100%,96%,1)", 
-//     200: "hsla(70,87%,78%,1)", 
-//     300: "hsla(70,91%,66%,1)", 
-//     400: "hsla(70,86%,57%,1)", 
-//     500: "hsla(70,82%,50%,1)", 
-//     600: "hsla(70,87%,39%,1)", 
-//     700: "hsla(70,90%,30%,1)", 
-//     800: "hsla(70,94%,21%,1)", 
-//     900: "hsla(70,100%,12%,1)"
-//   },
-//   info: {
-//     100: "hsla(190,100%,96%,1)", 
-//     200: "hsla(190,87%,78%,1)", 
-//     300: "hsla(190,91%,66%,1)", 
-//     400: "hsla(190,86%,57%,1)", 
-//     500: "hsla(190,82%,50%,1)", 
-//     600: "hsla(190,87%,39%,1)", 
-//     700: "hsla(190,90%,30%,1)", 
-//     800: "hsla(190,94%,21%,1)", 
-//     900: "hsla(190,100%,12%,1)"
-//   },
-//   warn: {
-//     100: "hsla(60,100%,96%,1)", 
-//     200: "hsla(60,87%,78%,1)", 
-//     300: "hsla(60,91%,66%,1)", 
-//     400: "hsla(60,86%,57%,1)", 
-//     500: "hsla(60,82%,50%,1)", 
-//     600: "hsla(60,87%,39%,1)", 
-//     700: "hsla(60,90%,30%,1)", 
-//     800: "hsla(60,94%,21%,1)", 
-//     900: "hsla(60,100%,12%,1)"
-//   },
-//   error: {
-//     100: "hsla(1,100%,96%,1)", 
-//     200: "hsla(1,87%,78%,1)", 
-//     300: "hsla(1,91%,66%,1)", 
-//     400: "hsla(1,86%,57%,1)", 
-//     500: "hsla(1,82%,50%,1)", 
-//     600: "hsla(1,87%,39%,1)", 
-//     700: "hsla(1,90%,30%,1)", 
-//     800: "hsla(1,94%,21%,1)", 
-//     900: "hsla(1,100%,12%,1)"
-//   }
-// };
-
 const Colors = {
-  neutral: generateNeutrals(146),
-  brand: generateShades(97),
-  success: generateShades(70),
-  info: generateShades(190),
-  warn: generateShades(60),
-  error: generateShades(1),
+  ...generateNeutrals(146),
+  ...generateShades("primary",97),
+  ...generateShades("success",70),
+  ...generateShades("info",190),
+  ...generateShades("warning",60),
+  ...generateShades("danger",1),
 }
 
 module.exports = {
@@ -154,5 +79,5 @@ module.exports = {
       textColor: Colors,
     },
   },
-  plugins: ['@headlessui/tailwindcss'],
+  plugins: [],
 }

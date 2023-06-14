@@ -1,0 +1,162 @@
+{
+    "historyStorage": 32,
+    "tools": [
+
+        {
+            "label": "Translate",
+            "order": 0,
+            "description": "Move the selected object(s) by dragging with the mouse.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-600 text-neutral-50"
+            }
+        },
+        {
+            "label": "Rotate",
+            "order": 1,
+            "description": "Rotate the selected object(s) by dragging with the mouse.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-400 text-neutral-150"
+            }
+        },
+        {
+            "label": "Scale",
+            "order": 2,
+            "description": "Scale the selected object(s) by dragging with the mouse.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-400 text-neutral-150"
+            }
+        },
+        {
+            "label": "Resize",
+            "order": 3,
+            "description": "Resize the selected object(s) by dragging with the mouse.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-400 text-neutral-150"
+
+            }
+        }, {
+            "label": "LocalGlobal",
+            "order": 4,
+            "description": "Toggle between local and global coordinate systems.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-600 text-neutral-50"
+
+            }
+        }, {
+            "label": "Snap",
+            "order": 5,
+            "description": "Toggle snapping to grid and other objects.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-400 text-neutral-150"
+            }
+        }, {
+            "label": "Focus",
+            "order": 6,
+            "description": "Focus the camera on the selected object(s).",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-450 text-neutral-15"
+            }
+
+        }, {
+            "label": "Undo",
+            "order": 7,
+            "description": "Undo the last action.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-500 text-neutral-150"
+            }
+
+        }, {
+            "label": "Redo",
+            "order": 8,
+            "description": "Redo the last action.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-500 text-neutral-150"
+
+            }
+        }, {
+            "label": "Code Editor",
+            "order": 9,
+            "description": "Open the code editor.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-500 text-neutral-150"
+
+            }
+        }, {
+            "label": "Publish",
+            "order": 10,
+            "description": "Publish the current scene.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-500 text-neutral-150"
+            }
+        }, {
+            "label": "How To",
+            "order": 11,
+            "description": "Open the how-to guide.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-500 text-neutral-150"
+            }
+        }, {
+            "label": "Controls",
+            "order": 12,
+            "description": "Open the controls menu.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-500 text-neutral-150"
+            }
+
+        }, {
+            "label": "Feedback",
+            "order": 13,
+            "description": "Open the feedback menu.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-500 text-neutral-150"
+            }
+        }, {
+            "label": "Plugins",
+            "order": 14,
+            "description": "Open the plugins menu.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-500 text-neutral-150"
+            }
+
+        }, {
+            "label": "Forum",
+            "order": 15,
+            "description": "Open the forum.",
+            "icon": {
+                "name": "up-down-left-right",
+                "style": "classic",
+                "className": "bg-neutral-500 text-neutral-150"
+            }
+        }
+    ]
+}

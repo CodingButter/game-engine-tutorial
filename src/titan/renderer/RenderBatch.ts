@@ -189,7 +189,7 @@ export default class RenderBatch {
             //load position
             this.vertices[floatOffset] = sprite.__gameObject.transform.position[0] + (xAdd * sprite.__gameObject.transform.scale[0]);
             this.vertices[floatOffset + 1] = sprite.__gameObject.transform.position[1] + (yAdd * sprite.__gameObject.transform.scale[1]);
-
+            
             //load color
             this.vertices[floatOffset + 2] = color[0];
             this.vertices[floatOffset + 3] = color[1];

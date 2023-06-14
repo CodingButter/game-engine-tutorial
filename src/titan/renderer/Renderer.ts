@@ -20,7 +20,7 @@ export default class Renderer {
     private addSpriteRenderer(sprite: SpriteRenderer) {
         let added = false;
         for (let batch of this.batches) {
-            if (batch.hasRoom() && batch.getZIndex() === sprite?._gameObject?.getZIndex()) {
+            if (batch.hasRoom() && batch.getZIndex() === sprite?.__gameObject?.getZIndex()) {
                 const tex: Texture | null = sprite.getTexture();
                 if (tex === null || (batch.hasTexture(tex) || batch.hasTextureRoom())) {
                     batch.addSprite(sprite);
@@ -30,7 +30,7 @@ export default class Renderer {
             }
         }
         if (!added) {
-            const newBatch = new RenderBatch(this.MAX_BATCH_SIZE, sprite._gameObject?.getZIndex());
+            const newBatch = new RenderBatch(this.MAX_BATCH_SIZE, sprite.__gameObject?.getZIndex());
             newBatch.start();
             this.batches.push(newBatch);
             newBatch.addSprite(sprite);
