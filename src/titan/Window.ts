@@ -1,6 +1,6 @@
 import { vec2, vec4 } from "gl-matrix";
-import LevelEditorScene from "./LevelEditorScene";
-import type Scene from "./Scene";
+import LevelEditorScene from "./scenes/LevelEditorScene";
+import type Scene from "./scenes/Scene";
 import Time from "./util/Time";
 import EventEmitter from "events";
 
@@ -9,10 +9,10 @@ export default class Window extends EventEmitter {
 
     private parent: HTMLElement;
     private rgb: vec4 = vec4.fromValues(0, 0, 0, 1);
-    private width: number;
-    private height: number;
-    private title: string;
-    private aspectRatio: number;
+    private width: number = window.innerWidth;
+    private height: number = window.innerHeight;
+    private title: string = "Titan Engine"
+    private aspectRatio: number = this.width / this.height;
 
     private canvas: HTMLCanvasElement;
     private gl: WebGL2RenderingContext | null;
@@ -20,17 +20,13 @@ export default class Window extends EventEmitter {
     public static loaded: boolean = false;
     private static window: Window | undefined;
 
-    private constructor(width: number, height: number, title: string, parent: HTMLElement) {
+    private constructor() {
         super();
-        this.width = width;
-        this.height = height;
-        this.aspectRatio = width / height;
-        this.title = title;
         this.canvas = document.createElement("canvas");
         this.gl = this.canvas.getContext("webgl2") as WebGL2RenderingContext;
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
         this.gl.viewport(0, 0, this.width, this.height);
-        this.parent = parent;
+        this.parent = document.body;
     }
 
 
@@ -143,9 +139,7 @@ export default class Window extends EventEmitter {
 
     static get(parent?: HTMLElement): Window {
         if (Window.window === undefined) {
-            const width = 1920
-            const height = 1080;
-            Window.window = new Window(width, height, "Titan", parent || document.body);
+            Window.window = new Window();
             Window.loaded = true;
         }
         return Window.window;

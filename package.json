@@ -5,9 +5,14 @@
     "dependencies": {
         "@emotion/react": "^11.11.1",
         "@emotion/styled": "^11.11.0",
+        "@fortawesome/fontawesome-svg-core": "^6.4.0",
+        "@fortawesome/free-regular-svg-icons": "^6.4.0",
+        "@fortawesome/free-solid-svg-icons": "^6.4.0",
+        "@fortawesome/react-fontawesome": "^0.2.0",
         "@headlessui/react": "^1.7.15",
         "@mui/icons-material": "^5.11.16",
         "@mui/material": "^5.13.4",
+        "@react-three/fiber": "^8.13.3",
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^13.5.0",
@@ -15,8 +20,9 @@
         "@types/node": "^16.18.34",
         "@types/react": "^18.2.7",
         "@types/react-dom": "^18.2.4",
+        "@types/three": "^0.152.1",
+        "babel-plugin-macros": "^3.1.0",
         "classnames": "^2.3.2",
-        "events": "^3.3.0",
         "gl-matrix": "^3.4.3",
         "module-alias": "^2.2.3",
         "react": "^18.2.0",
@@ -24,8 +30,8 @@
         "react-icons": "^4.9.0",
         "react-resizable-layout": "^0.6.0",
         "react-scripts": "^5.0.1",
-        "typescript": "^4.9.5",
-        "web-vitals": "^2.1.4"
+        "three": "^0.153.0",
+        "typescript": "^5.2.0-dev.20230613"
     },
     "scripts": {
         "start": "react-scripts start",
@@ -52,16 +58,7 @@
         ]
     },
     "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
         "autoprefixer": "^10.4.14"
-    },
-    "_moduleAliases": {
-        "@components": "src/components",
-        "@hooks": "src/hooks",
-        "@utils": "src/utils",
-        "@assets": "src/assets",
-        "@constants": "src/constants",
-        "@types": "src/types",
-        "@styles": "src/styles",
-        "@titan": "src/titan"
     }
 }

@@ -8,11 +8,13 @@ export default class GameObject {
     private name: string;
     private components: Component[] = [];
     private zIndex: number = 0;
+    public id: string = "";
 
     constructor(name: string, transform: Transform = new Transform(), zIndex?: number) {
         this.name = name;
         this.transform = transform;
         this.zIndex = zIndex || this.zIndex;
+        this.id = btoa(this.name + Math.random().toString(36).substring(7) + Date.now().toString(36)).replace(/[^a-zA-Z0-9]/g, "");
     }
 
     public getComponent<T extends Component>(component: new (...args: any[]) => T): T | null {
@@ -65,6 +67,7 @@ export default class GameObject {
     public static serialize(gameObject: GameObject): string {
         const obj: any = {};
         obj.name = gameObject.name;
+        obj.id = gameObject.id;
         obj.transform = gameObject.transform;
         obj.components = [];
         for (let component of gameObject.components) {
@@ -78,6 +81,7 @@ export default class GameObject {
         const scale = vec2.fromValues(obj.transform.scale[0], obj.transform.scale[1]);
         const transform = new Transform(position, scale);
         const gameObject = new GameObject(obj.name, transform);
+        gameObject.id = obj.id;
         for (let component of obj.components) {
             try {
                 // @ts-ignore
